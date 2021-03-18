@@ -51,8 +51,7 @@ public class MainActivity extends AppCompatActivity {
         protected Void doInBackground(Void... arg0) {
             Handler sh = new Handler();
             JsonParser parser = new JsonParser();
-            Valute[] valute;
-            JsonObject [] obj;
+            JSONObject [] obj;
 
             // Making a request to url and getting response
             String jsonStr = sh.makeServiceCall(url);
@@ -61,38 +60,44 @@ public class MainActivity extends AppCompatActivity {
 
             if (jsonStr != null) {
                 try {
+                    JSONObject jsonObj = new JSONObject(jsonStr).getJSONObject("Valute");
                     JsonObject jsonObject = parser.parse(String.valueOf(new JSONObject(jsonStr).getJSONObject("Valute"))).getAsJsonObject();
                     String []keys =  jsonObject.keySet().toArray(new String[jsonObject.keySet().size()]);
 
-                    valute = new Valute[keys.length];
-                    obj = new JsonObject[keys.length];
+                    obj = new JSONObject[keys.length];
 
                     for (int i =0; i<keys.length; i++){
-                        obj[i] = jsonObject.getAsJsonObject(keys[i]);
-                        valute[i] = new Valute(
-                                obj[i].get("ID"),
-                                obj[i].get("NumCode"),
-                                obj[i].get("CharCode"),
-                                obj[i].get("Nominal"),
-                                obj[i].get("Name"),
-                                obj[i].get("Value"),
-                                obj[i].get("Previous"));
-                        valute[i].valute = keys[i];
+                       // obj[i] = jsonObject.getAsJsonObject(keys[i]);
+                        obj[i] = jsonObj.getJSONObject(keys[i]);
 
+                        HashMap<String, String> val = new HashMap<>();
+
+                        // adding each child node to HashMap key => value
+                        val.put("CharCode", obj[i].getString("CharCode"));
+                        val.put("Name", obj[i].getString("Name"));
+                        val.put("Value", obj[i].getString("Value"));
+
+
+                        // adding contact to contact list
+                        valuteList.add(val);
                     }
                 } catch (final JSONException e) {
                     Log.e(TAG, "Json parsing error: " + e.getMessage());
                 }
             }
+            return null;
+        }
 
-         /*   ListAdapter adapter = new SimpleAdapter(
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+
+            ListAdapter adapter = new SimpleAdapter(
                     MainActivity.this, valuteList,
-                    R.layout.list_item, new String[]{"charCode", "name",
-                    "value"}, new int[]{R.id.CharCode,
+                    R.layout.list_item, new String[]{"CharCode", "Name",
+                    "Value"}, new int[]{R.id.CharCode,
                     R.id.name, R.id.value});
 
-            lv.setAdapter(adapter);*/
-            return null;
+            lv.setAdapter(adapter);
         }
     }
 }
