@@ -1,33 +1,25 @@
 package com.example.currency;
 
+import com.google.gson.JsonElement;
+
 public class Valute {
     public String valute;
-    public Param param;
-
-
-    public Valute(){
-
-    }
-}
-
-class Param {
-
     public String id;
     public String numCode;
     public String charCode;
-    public String nominal;
+    public int nominal;
     public String name;
-    public float value;
-    public float previous;
+    public double value;
+    public double previous;
 
-    public Param(String id, String numCode, String charCode,
-               String nominal, String name, float value, float previous){
-        this.id=id;
-        this.numCode=numCode;
-        this.charCode=charCode;
-        this.nominal=nominal;
-        this.name=name;
-        this.value=value;
-        this.previous=previous;
+    public Valute(JsonElement id, JsonElement numCode, JsonElement charCode,
+                  JsonElement nominal, JsonElement name, JsonElement value, JsonElement previous){
+        this.id = id.getAsString();
+        this.numCode = numCode.getAsString();
+        this.charCode = charCode.getAsString();
+        this.nominal = nominal.getAsInt();
+        this.name = name.getAsString();
+        this.value = value.getAsFloat();
+        this.previous = previous.getAsFloat();
     }
 }
