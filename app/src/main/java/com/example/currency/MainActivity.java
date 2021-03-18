@@ -1,11 +1,14 @@
 package com.example.currency;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
 import android.util.Log;
+import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -28,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ListView lv;
 
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     // URL to get contacts JSON
     private static String url = "https://www.cbr-xml-daily.ru/daily_json.js";
 
@@ -39,12 +43,27 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         valuteList = new ArrayList<>();
-
         lv = (ListView) findViewById(R.id.listView);
 
         new GetValute().execute();
-    }
 
+        mSwipeRefreshLayout = findViewById(R.id.swipe_container);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                 new GetValute().execute();
+
+                mSwipeRefreshLayout.setRefreshing(true);
+                mSwipeRefreshLayout.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
+                }, 1000);
+            }
+        });
+    }
 
     private class GetValute extends AsyncTask<Void, Void, Void> {
         @Override
@@ -77,7 +96,6 @@ public class MainActivity extends AppCompatActivity {
                         val.put("Name", obj[i].getString("Name"));
                         val.put("Value", obj[i].getString("Value"));
 
-
                         // adding contact to contact list
                         valuteList.add(val);
                     }
@@ -96,8 +114,12 @@ public class MainActivity extends AppCompatActivity {
                     R.layout.list_item, new String[]{"CharCode", "Name",
                     "Value"}, new int[]{R.id.CharCode,
                     R.id.name, R.id.value});
-
             lv.setAdapter(adapter);
         }
+    }
+
+    public void toConvert(View view){
+        Intent intent = new Intent(this, Convert.class);
+        startActivity(intent);
     }
 }
