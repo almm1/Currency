@@ -18,54 +18,71 @@
         android:orientation="vertical">
 
         <TextView
-            android:layout_marginTop="20dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginLeft="30dp"
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="18dp"
+            android:layout_marginRight="30dp"
+            android:fontFamily="@font/open_sans"
+            android:text="RUB"
+            android:textColor="#000000"
+            android:textSize="24sp" />
 
         <EditText
             android:id="@+id/editTextNumber"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="45dp"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="15dp"
 
             android:layout_marginRight="30dp"
             android:background="@drawable/edit_text"
-            android:inputType="number" />
+            android:fontFamily="@font/open_sans_light"
+            android:inputType="number"
+            android:textColor="#000000" />
 
         <TextView
             android:id="@+id/textView2"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="10dp"
             android:layout_marginRight="30dp"
             android:layout_marginLeft="30dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:fontFamily="@font/open_sans"
+            android:textColor="#000000"
+            android:textSize="24sp"
+            android:text="USD"
+            />
 
         <EditText
             android:id="@+id/editTextNumber2"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="45dp"
             android:layout_marginLeft="30dp"
-            android:layout_marginTop="15dp"
-
+            android:layout_marginTop="10dp"
+            android:enabled="false"
+            android:focusable="false"
             android:layout_marginRight="30dp"
             android:background="@drawable/edit_text"
-            android:inputType="number" />
+            android:inputType="number"
+            android:fontFamily="@font/open_sans_light"
+            android:textColor="#000000"/>
+
         <Button
             android:id="@+id/button"
-            android:layout_marginLeft="100dp"
-            android:layout_marginRight="100dp"
-            android:text="Конвертировать"
-            android:background="@drawable/button_convert"
-            android:layout_marginTop="30dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            >
+            android:layout_marginLeft="100dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="100dp"
+            android:background="@drawable/button_convert"
+            android:fontFamily="@font/open_sans_light"
+            android:text="Конвертировать"
+            android:onClick="convert"
+            android:textColor="#000000"
+            android:textSize="18sp">
+
         </Button>
     </LinearLayout>
 

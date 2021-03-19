@@ -15,6 +15,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".Convert"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
         <activity android:name=".MainActivity">
             <intent-filter>

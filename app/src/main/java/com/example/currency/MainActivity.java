@@ -4,11 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -101,7 +103,15 @@ public class MainActivity extends AppCompatActivity {
                         float prev = (float) obj[i].getDouble("Previous");
                         float difference = ((cur-prev)/prev)*100;
                         difference = (float) (Math.round(difference * 100) / 100.0);
-                        String string =  Float.toString(difference);
+                        String string="";
+                        if (difference > 0){
+                            string =  "+"+Float.toString(difference)+"%";
+                        }
+                        else if (difference < 0){
+                            string =  Float.toString(difference)+"%";
+                        }
+                        else
+                            string = "0%";
                         val.put("Difference", string);
 
                         // adding contact to contact list
@@ -121,27 +131,42 @@ public class MainActivity extends AppCompatActivity {
                     MainActivity.this, valuteList,
                     R.layout.list_item, new String[]{"CharCode", "Name",
                     "Value", "Difference"}, new int[]{R.id.CharCode,
-                    R.id.name, R.id.value, R.id.difference});
-            /*TextView textView = findViewById(R.id.difference);
-            String s = (String) textView.getText();
-            float x = Float.parseFloat(s);
+                    R.id.name, R.id.value, R.id.difference}){
+            @Override
+            public View getView (int position, View convertView, ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
 
-            if (x>0){
-                textView.setTextColor(0x00FF85);
-                String res = "+" + x + "%";
-                textView.setText(res);
+                TextView textView = (TextView) view.findViewById(R.id.difference);
+                String s = (String) textView.getText();
+
+               if (s.charAt(0) == '+')
+                    textView.setTextColor(Color.parseColor("#00FF85"));
+                   // textView.setTextColor(0x00FF85);
+                else if (s.charAt(0) == '-')
+                 textView.setTextColor(Color.parseColor("#DC5A5A"));
+                  //  textView.setTextColor(0xDC5A5A);
+                else if(s.charAt(0)=='0')
+                 textView.setTextColor(Color.parseColor("#727272"));
+                  //  textView.setTextColor(0x727272);
+                return view;
             }
-            else if (x<0){
-                textView.setTextColor(0xFF0404);
-                String res = "-" + x + "%";
-                textView.setText(res);
-            }*/
+            };
+
             lv.setAdapter(adapter);
         }
     }
 
     public void toConvert(View view){
+        TextView textView = (TextView) view.findViewById(R.id.CharCode);
+        String s = (String) textView.getText();
+
+        TextView text = (TextView) view.findViewById(R.id.value);
+        String v = (String) text.getText();
+        float f = Float.parseFloat(v);
+
         Intent intent = new Intent(this, Convert.class);
+        intent.putExtra("CharCode", s);
+        intent.putExtra("value", f);
         startActivity(intent);
     }
 }
