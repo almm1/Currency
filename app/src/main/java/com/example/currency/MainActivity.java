@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 
 import com.google.gson.JsonObject;
@@ -96,6 +97,13 @@ public class MainActivity extends AppCompatActivity {
                         val.put("Name", obj[i].getString("Name"));
                         val.put("Value", obj[i].getString("Value"));
 
+                        float cur = (float) obj[i].getDouble("Value");
+                        float prev = (float) obj[i].getDouble("Previous");
+                        float difference = ((cur-prev)/prev)*100;
+                        difference = (float) (Math.round(difference * 100) / 100.0);
+                        String string =  Float.toString(difference);
+                        val.put("Difference", string);
+
                         // adding contact to contact list
                         valuteList.add(val);
                     }
@@ -112,8 +120,22 @@ public class MainActivity extends AppCompatActivity {
             ListAdapter adapter = new SimpleAdapter(
                     MainActivity.this, valuteList,
                     R.layout.list_item, new String[]{"CharCode", "Name",
-                    "Value"}, new int[]{R.id.CharCode,
-                    R.id.name, R.id.value});
+                    "Value", "Difference"}, new int[]{R.id.CharCode,
+                    R.id.name, R.id.value, R.id.difference});
+            /*TextView textView = findViewById(R.id.difference);
+            String s = (String) textView.getText();
+            float x = Float.parseFloat(s);
+
+            if (x>0){
+                textView.setTextColor(0x00FF85);
+                String res = "+" + x + "%";
+                textView.setText(res);
+            }
+            else if (x<0){
+                textView.setTextColor(0xFF0404);
+                String res = "-" + x + "%";
+                textView.setText(res);
+            }*/
             lv.setAdapter(adapter);
         }
     }
