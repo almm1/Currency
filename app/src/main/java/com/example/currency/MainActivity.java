@@ -3,6 +3,7 @@ package com.example.currency;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -15,6 +16,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.google.gson.JsonObject;
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private String TAG = MainActivity.class.getSimpleName();
 
     private ListView lv;
+    String time;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     // URL to get contacts JSON
@@ -56,6 +59,9 @@ public class MainActivity extends AppCompatActivity {
             public void onRefresh() {
 
                  new GetValute().execute();
+
+                 time = "На момент: "+ time;
+                 Toast.makeText(getApplicationContext(), time, Toast.LENGTH_SHORT).show();
 
                 mSwipeRefreshLayout.setRefreshing(true);
                 mSwipeRefreshLayout.postDelayed(new Runnable() {
@@ -83,7 +89,8 @@ public class MainActivity extends AppCompatActivity {
             if (jsonStr != null) {
                 try {
                     JSONObject jsonObj = new JSONObject(jsonStr).getJSONObject("Valute");
-                    JsonObject jsonObject = parser.parse(String.valueOf(new JSONObject(jsonStr).getJSONObject("Valute"))).getAsJsonObject();
+                    time = new JSONObject(jsonStr).getString("Timestamp");
+                    JsonObject jsonObject = parser.parse(String.valueOf(jsonObj)).getAsJsonObject();
                     String []keys =  jsonObject.keySet().toArray(new String[jsonObject.keySet().size()]);
 
                     obj = new JSONObject[keys.length];
