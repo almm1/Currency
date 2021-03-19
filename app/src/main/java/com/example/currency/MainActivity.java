@@ -3,7 +3,7 @@ package com.example.currency;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.content.Context;
+
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -18,7 +18,6 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -27,8 +26,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -72,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
                 }, 1000);
             }
         });
+        Timer timer = new Timer();
+        timer.schedule(new UpdateTimeTask(), 300000, 300000); //тикаем каждую секунду без задержки
     }
 
     private class GetValute extends AsyncTask<Void, Void, Void> {
@@ -96,7 +97,6 @@ public class MainActivity extends AppCompatActivity {
                     obj = new JSONObject[keys.length];
 
                     for (int i =0; i<keys.length; i++){
-                       // obj[i] = jsonObject.getAsJsonObject(keys[i]);
                         obj[i] = jsonObj.getJSONObject(keys[i]);
 
                         HashMap<String, String> val = new HashMap<>();
@@ -130,7 +130,6 @@ public class MainActivity extends AppCompatActivity {
             }
             return null;
         }
-
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
 
@@ -148,17 +147,13 @@ public class MainActivity extends AppCompatActivity {
 
                if (s.charAt(0) == '+')
                     textView.setTextColor(Color.parseColor("#00FF85"));
-                   // textView.setTextColor(0x00FF85);
                 else if (s.charAt(0) == '-')
                  textView.setTextColor(Color.parseColor("#DC5A5A"));
-                  //  textView.setTextColor(0xDC5A5A);
                 else if(s.charAt(0)=='0')
                  textView.setTextColor(Color.parseColor("#727272"));
-                  //  textView.setTextColor(0x727272);
                 return view;
             }
             };
-
             lv.setAdapter(adapter);
         }
     }
@@ -176,4 +171,30 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("value", f);
         startActivity(intent);
     }
+
+    private class UpdateTimeTask extends TimerTask {
+        @Override
+        public void run() {
+            new GetValute().execute();
+
+            time = "На момент: "+ time;
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    // Stuff that updates the UI
+                    Toast.makeText(getApplicationContext(), time, Toast.LENGTH_SHORT).show();
+
+                    mSwipeRefreshLayout.setRefreshing(true);
+                    mSwipeRefreshLayout.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mSwipeRefreshLayout.setRefreshing(false);
+                        }
+                    }, 1000);
+                }
+            });
+        }
+    }
+
 }

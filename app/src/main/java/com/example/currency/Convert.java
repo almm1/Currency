@@ -1,7 +1,5 @@
 package com.example.currency;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,11 +9,9 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class Convert extends Activity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,9 +47,7 @@ public class Convert extends Activity {
         EditText textIn = findViewById(R.id.editTextNumber);
         EditText textOut = findViewById(R.id.editTextNumber2);
 
-        float in=0;
-
-        in = Float.parseFloat(String.valueOf(textIn.getText()));
+        float in = Float.parseFloat(String.valueOf(textIn.getText()));
         in = in/value;
         in = (float) (Math.round(in * 100) / 100.0);
 
