@@ -32,14 +32,12 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity {
 
     private String TAG = MainActivity.class.getSimpleName();
-
     private ListView lv;
-    String time;
-
+    private String time;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private GetValute getValute = new GetValute();
     // URL to get contacts JSON
     private static String url = "https://www.cbr-xml-daily.ru/daily_json.js";
-
     ArrayList<HashMap<String, String>> valuteList;
 
     @Override
@@ -50,25 +48,13 @@ public class MainActivity extends AppCompatActivity {
         valuteList = new ArrayList<>();
         lv = (ListView) findViewById(R.id.listView);
 
-        new GetValute().execute();
+        getValute.execute();
 
         mSwipeRefreshLayout = findViewById(R.id.swipe_container);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-
-                 new GetValute().execute();
-
-                 time = "На момент: "+ time;
-                 Toast.makeText(getApplicationContext(), time, Toast.LENGTH_SHORT).show();
-
-                mSwipeRefreshLayout.setRefreshing(true);
-                mSwipeRefreshLayout.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mSwipeRefreshLayout.setRefreshing(false);
-                    }
-                }, 1000);
+                update();
             }
         });
         Timer timer = new Timer();
@@ -105,20 +91,20 @@ public class MainActivity extends AppCompatActivity {
                         val.put("CharCode", obj[i].getString("CharCode"));
                         val.put("Name", obj[i].getString("Name"));
                         val.put("Value", obj[i].getString("Value"));
-
+                        val.put("Nominal", obj[i].getString("Nominal"));
                         float cur = (float) obj[i].getDouble("Value");
                         float prev = (float) obj[i].getDouble("Previous");
-                        float difference = ((cur-prev)/prev)*100;
+                        float difference = cur-prev;
                         difference = (float) (Math.round(difference * 100) / 100.0);
                         String string="";
                         if (difference > 0){
-                            string =  "+"+Float.toString(difference)+"%";
+                            string =  "+"+Float.toString(difference);
                         }
                         else if (difference < 0){
-                            string =  Float.toString(difference)+"%";
+                            string =  Float.toString(difference);
                         }
                         else
-                            string = "0%";
+                            string = "0";
                         val.put("Difference", string);
 
                         // adding contact to contact list
@@ -136,23 +122,23 @@ public class MainActivity extends AppCompatActivity {
             ListAdapter adapter = new SimpleAdapter(
                     MainActivity.this, valuteList,
                     R.layout.list_item, new String[]{"CharCode", "Name",
-                    "Value", "Difference"}, new int[]{R.id.CharCode,
-                    R.id.name, R.id.value, R.id.difference}){
-            @Override
-            public View getView (int position, View convertView, ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
+                    "Value", "Nominal", "Difference"}, new int[]{R.id.CharCode,
+                    R.id.name, R.id.value, R.id.nominal, R.id.difference}) {
+                @Override
+                public View getView(int position, View convertView, ViewGroup parent) {
+                    View view = super.getView(position, convertView, parent);
 
-                TextView textView = (TextView) view.findViewById(R.id.difference);
-                String s = (String) textView.getText();
+                    TextView textView = (TextView) view.findViewById(R.id.difference);
+                    String s = (String) textView.getText();
 
-               if (s.charAt(0) == '+')
-                    textView.setTextColor(Color.parseColor("#00FF85"));
-                else if (s.charAt(0) == '-')
-                 textView.setTextColor(Color.parseColor("#DC5A5A"));
-                else if(s.charAt(0)=='0')
-                 textView.setTextColor(Color.parseColor("#727272"));
-                return view;
-            }
+                    if (s.charAt(0) == '+')
+                        textView.setTextColor(Color.parseColor("#00FF85"));
+                    else if (s.charAt(0) == '-')
+                        textView.setTextColor(Color.parseColor("#DC5A5A"));
+                    else if (s.charAt(0) == '0')
+                        textView.setTextColor(Color.parseColor("#727272"));
+                    return view;
+                }
             };
             lv.setAdapter(adapter);
         }
@@ -166,35 +152,46 @@ public class MainActivity extends AppCompatActivity {
         String v = (String) text.getText();
         float f = Float.parseFloat(v);
 
+        TextView nom = (TextView) view.findViewById(R.id.nominal);
+        String nn = (String) nom.getText();
+        int n = Integer.parseInt(nn);
+
         Intent intent = new Intent(this, Convert.class);
         intent.putExtra("CharCode", s);
         intent.putExtra("value", f);
+        intent.putExtra("nominal", n);
         startActivity(intent);
     }
 
     private class UpdateTimeTask extends TimerTask {
         @Override
         public void run() {
-            new GetValute().execute();
-
-            time = "На момент: "+ time;
-
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    // Stuff that updates the UI
-                    Toast.makeText(getApplicationContext(), time, Toast.LENGTH_SHORT).show();
-
-                    mSwipeRefreshLayout.setRefreshing(true);
-                    mSwipeRefreshLayout.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            mSwipeRefreshLayout.setRefreshing(false);
-                        }
-                    }, 1000);
-                }
-            });
+           update();
         }
     }
 
+    private void update(){
+        getValute = null;
+        valuteList.clear();
+        System.gc();
+        getValute = new GetValute();
+        getValute.execute();
+        time = "На момент: "+ time;
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // Stuff that updates the UI
+                Toast.makeText(getApplicationContext(), time, Toast.LENGTH_SHORT).show();
+
+                mSwipeRefreshLayout.setRefreshing(true);
+                mSwipeRefreshLayout.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
+                }, 1000);
+            }
+        });
+    }
 }

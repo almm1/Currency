@@ -31,24 +31,24 @@ public class Convert extends Activity {
         Intent intent = getIntent();
         String s = intent.getStringExtra("CharCode");
         final float value = intent.getFloatExtra("value", 0);
-        final CharSequence charSequence = s;
-        textView.setText(charSequence);
+        final int nominal = intent.getIntExtra("nominal", 0);
+        textView.setText(s);
 
         Button btnAlpha = (Button)findViewById(R.id.button);
         btnAlpha.setOnClickListener(new Button.OnClickListener(){
             @Override
             public void onClick(View view) {
                 view.startAnimation(animAlpha);
-                convert(value);
+                convert(value, nominal);
             }
         });
     }
-    public void convert(float value){
+    public void convert(float value, int nominal){
         EditText textIn = findViewById(R.id.editTextNumber);
         EditText textOut = findViewById(R.id.editTextNumber2);
 
         float in = Float.parseFloat(String.valueOf(textIn.getText()));
-        in = in/value;
+        in = (in/value)*nominal;
         in = (float) (Math.round(in * 100) / 100.0);
 
         String string =  ""+Float.toString(in);
